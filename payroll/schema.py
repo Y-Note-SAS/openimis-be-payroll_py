@@ -22,7 +22,7 @@ from payroll.models import PaymentPoint, Payroll, \
     BenefitConsumption, BenefitAttachment, \
     CsvReconciliationUpload, PayrollBenefitConsumption, BenefitConsumptionStatus
 from payroll.payments_registry import PaymentMethodStorage
-from social_protection.models import BenefitPlan
+from benefit_plan.models import BenefitPlan
 
 
 class Query(graphene.ObjectType):

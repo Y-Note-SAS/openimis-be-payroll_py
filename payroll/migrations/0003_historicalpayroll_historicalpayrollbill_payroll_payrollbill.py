@@ -12,7 +12,6 @@ import simple_history.models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('social_protection', '0008_benefitplandatauploadrecords_historicalbenefitplandatauploadrecords'),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
         ('invoice', '0010_auto_20230126_0903'),
         ('payroll', '0002_add_pp_rights_to_admin'),
@@ -32,7 +31,7 @@ class Migration(migrations.Migration):
                 ('date_valid_to', core.fields.DateTimeField(blank=True, db_column='DateValidTo', null=True)),
                 ('replacement_uuid', models.UUIDField(db_column='ReplacementUUID', null=True)),
                 ('name', models.CharField(max_length=255)),
-                ('benefit_plan', models.ForeignKey(on_delete=django.db.models.deletion.DO_NOTHING, to='social_protection.benefitplan')),
+                ('benefit_plan', models.ForeignKey(on_delete=django.db.models.deletion.DO_NOTHING, to='benefit_plan.benefitplan')),
                 ('payment_point', models.ForeignKey(on_delete=django.db.models.deletion.DO_NOTHING, to='payroll.paymentpoint')),
                 ('user_created', models.ForeignKey(db_column='UserCreatedUUID', on_delete=django.db.models.deletion.DO_NOTHING, related_name='payroll_user_created', to=settings.AUTH_USER_MODEL)),
                 ('user_updated', models.ForeignKey(db_column='UserUpdatedUUID', on_delete=django.db.models.deletion.DO_NOTHING, related_name='payroll_user_updated', to=settings.AUTH_USER_MODEL)),
@@ -105,7 +104,7 @@ class Migration(migrations.Migration):
                 ('history_date', models.DateTimeField(db_index=True)),
                 ('history_change_reason', models.CharField(max_length=100, null=True)),
                 ('history_type', models.CharField(choices=[('+', 'Created'), ('~', 'Changed'), ('-', 'Deleted')], max_length=1)),
-                ('benefit_plan', models.ForeignKey(blank=True, db_constraint=False, null=True, on_delete=django.db.models.deletion.DO_NOTHING, related_name='+', to='social_protection.benefitplan')),
+                ('benefit_plan', models.ForeignKey(blank=True, db_constraint=False, null=True, on_delete=django.db.models.deletion.DO_NOTHING, related_name='+', to='benefit_plan.benefitplan')),
                 ('history_user', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to=settings.AUTH_USER_MODEL)),
                 ('payment_point', models.ForeignKey(blank=True, db_constraint=False, null=True, on_delete=django.db.models.deletion.DO_NOTHING, related_name='+', to='payroll.paymentpoint')),
                 ('user_created', models.ForeignKey(blank=True, db_column='UserCreatedUUID', db_constraint=False, null=True, on_delete=django.db.models.deletion.DO_NOTHING, related_name='+', to=settings.AUTH_USER_MODEL)),

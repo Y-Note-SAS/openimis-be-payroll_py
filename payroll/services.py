@@ -30,7 +30,7 @@ from payroll.strategies import StrategyOfPaymentInterface
 from calculation.services import get_calculation_object
 from core.services.utils import output_exception, check_authentication
 from contribution_plan.models import PaymentPlan
-from social_protection.models import Beneficiary, BeneficiaryStatus
+from beneficiary.models import Beneficiary, BeneficiaryStatus
 from tasks_management.apps import TasksManagementConfig
 from tasks_management.models import Task
 from tasks_management.services import TaskService, _get_std_task_data_payload

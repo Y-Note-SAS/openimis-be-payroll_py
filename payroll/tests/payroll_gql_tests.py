@@ -20,8 +20,9 @@ from payroll.tests.data import gql_payroll_create, gql_payroll_query, gql_payrol
 from payroll.tests.helpers import PaymentPointHelper
 from core.test_helpers import LogInHelper
 from payroll.schema import Query, Mutation
-from social_protection.models import BenefitPlan, Beneficiary, BeneficiaryStatus
-from social_protection.tests.data import service_add_payload
+from benefit_plan.models import BenefitPlan
+from beneficiary.models import Beneficiary, BeneficiaryStatus
+from beneficiary.tests.data import service_add_payload
 
 
 class PayrollGQLTestCase(TestCase):

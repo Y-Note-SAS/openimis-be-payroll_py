@@ -112,7 +112,7 @@ class PayrollConfig(AppConfig):
                 setattr(PayrollConfig, field, cfg[field])
 
     def __register_filters_and_payment_methods(cls):
-        from social_protection.custom_filters import BenefitPlanCustomFilterWizard
+        from benefit_plan.custom_filters import BenefitPlanCustomFilterWizard
         CustomFilterRegistryPoint.register_custom_filters(
             module_name=cls.name,
             custom_filter_class_list=[BenefitPlanCustomFilterWizard]

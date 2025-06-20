@@ -12,7 +12,7 @@ from payroll.models import PaymentPoint, Payroll, BenefitConsumption, \
     PayrollBenefitConsumption, BenefitAttachment, CsvReconciliationUpload
 from contribution_plan.gql import PaymentPlanGQLType
 from payment_cycle.gql_queries import PaymentCycleGQLType
-from social_protection.models import BenefitPlan
+from benefit_plan.models import BenefitPlan
 
 
 class PaymentPointGQLType(DjangoObjectType):
