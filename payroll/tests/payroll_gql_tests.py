@@ -19,7 +19,7 @@ from core.test_helpers import LogInHelper, create_test_role
 from core.models.openimis_graphql_test_case import openIMISGraphQLTestCase, BaseTestContext
 from payroll.schema import Query, Mutation
 from location.test_helpers import create_test_location
-from social_protection.models import BenefitPlan, Beneficiary, BeneficiaryStatus, ProjectStatus
+from social_protection.models import BenefitPlan, Beneficiary, BeneficiaryStatus, BeneficiaryProjectEnrollment, ProjectStatus
 from social_protection.tests.data import service_add_payload
 from social_protection.tests.test_helpers import create_project
 from location.test_helpers import create_basic_test_locations
@@ -460,10 +460,13 @@ class PayrollGQLTestCase(openIMISGraphQLTestCase):
             "benefit_plan": cls.benefit_plan,
             "json_ext": individual.json_ext,
             "status": BeneficiaryStatus.ACTIVE,
-            "project": project
         }
         beneficiary = Beneficiary(**object_data)
         beneficiary.save(username=cls.user.username)
+
+        enrollment = BeneficiaryProjectEnrollment(beneficiary=beneficiary, project=project)
+        enrollment.save(username=cls.user.username)
+
         return beneficiary
 
     @classmethod
