@@ -218,7 +218,7 @@ class PayrollService(BaseService):
                 beneficiaries_queryset,
             )
 
-        return beneficiaries_queryset
+        return beneficiaries_queryset.distinct()
 
     def _generate_benefits(self, payment_plan, beneficiaries_queryset, date_from, date_to, payroll, payment_cycle):
         calculation = get_calculation_object(payment_plan.calculation)

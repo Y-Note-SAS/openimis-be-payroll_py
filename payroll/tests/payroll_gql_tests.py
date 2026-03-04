@@ -74,8 +74,15 @@ class PayrollGQLTestCase(openIMISGraphQLTestCase):
         cls.village = create_test_location("V", custom_props={"code": "VILL-PAYROLL-01", "parent": cls.ward})
         cls.other_location = create_test_location("V", custom_props={"code": "VILL-OTHER-01"})
 
-        cls.project_1 = create_project("Payroll Project 1", cls.benefit_plan, cls.user.username, status=ProjectStatus.COMPLETED)
-        cls.project_2 = create_project("Payroll Project 2", cls.benefit_plan, cls.user.username, status=ProjectStatus.COMPLETED)
+        cls.project_1 = create_project(
+            "Payroll Project 1", cls.benefit_plan, cls.user.username,
+            allows_multiple_enrollments=True, status=ProjectStatus.COMPLETED,
+        )
+        cls.project_2 = create_project(
+            "Payroll Project 2", cls.benefit_plan, cls.user.username,
+            allows_multiple_enrollments=True, status=ProjectStatus.COMPLETED,
+        )
+        # Both projects allow multiple enrollments to support test_create_with_multi_project_enrollment_no_duplicates
 
         cls.individual = cls.__create_individual(location=None, able_bodied=True)
         cls.individual_2 = cls.__create_individual(location=cls.village, able_bodied=False)
@@ -313,6 +320,50 @@ class PayrollGQLTestCase(openIMISGraphQLTestCase):
     def test_create_fail_due_to_empty_name(self):
         payroll = self.create_payroll("", self.json_ext_able_bodied_true)
         self.assertIsNone(payroll)
+
+    def test_create_with_multi_project_enrollment_no_duplicates(self):
+        """Regression test: beneficiary enrolled in multiple filtered projects should not be duplicated."""
+        # Create a beneficiary enrolled in BOTH project_1 AND project_2
+        multi_enrolled_individual = self.__create_individual(able_bodied=True)
+        multi_enrolled_beneficiary = Beneficiary(
+            individual=multi_enrolled_individual,
+            benefit_plan=self.benefit_plan,
+            json_ext=multi_enrolled_individual.json_ext,
+            status=BeneficiaryStatus.ACTIVE,
+        )
+        multi_enrolled_beneficiary.save(username=self.user.username)
+
+        enrollment_1 = BeneficiaryProjectEnrollment(
+            beneficiary=multi_enrolled_beneficiary,
+            project=self.project_1,
+        )
+        enrollment_1.save(username=self.user.username)
+        enrollment_2 = BeneficiaryProjectEnrollment(
+            beneficiary=multi_enrolled_beneficiary,
+            project=self.project_2,
+        )
+        enrollment_2.save(username=self.user.username)
+
+        # Filter by both projects - without distinct() this would duplicate the beneficiary
+        json_ext = json.dumps({
+            "filter_criteria": {
+                "project_ids": [str(self.project_1.id), str(self.project_2.id)]
+            }
+        })
+        payroll = self.create_payroll(f"{self.name}_multi_enroll", json_ext)
+        self.assertIsNotNone(payroll)
+
+        # Count benefits for the multi-enrolled beneficiary - should be exactly 1, not 2
+        payroll_benefits = PayrollBenefitConsumption.objects.filter(
+            payroll=payroll,
+            benefit__individual=multi_enrolled_individual,
+            is_deleted=False
+        )
+        self.assertEqual(
+            payroll_benefits.count(),
+            1,
+            "Beneficiary enrolled in multiple filtered projects should only generate one benefit"
+        )
 
     # def test_create_fail_due_to_one_bill_assigment(self):
     #     tmp_name = f"{self.name}-tmp"
